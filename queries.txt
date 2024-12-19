@@ -1,0 +1,378 @@
+
+1. Find all the topics and tasks which are taught in the month of October.
+
+db.courses.find({
+  "date": {
+    $gte: ISODate("2020-10-01T00:00:00.000Z"),
+    $lte: ISODate("2020-10-31T23:59:59.999Z")
+  }
+}, { "topics": 1, "tasks": 1 })
+
+2. Find all the company drives which appeared between 15-Oct-2020 and 31-Oct-2020.
+
+db.company_drives.find({
+  "date": {
+    $gte: ISODate("2020-10-15T00:00:00.000Z"),
+    $lte: ISODate("2020-10-31T23:59:59.999Z")
+  }
+})
+
+3. Find all the company drives and students who appeared for the placement.
+
+db.company_drives.aggregate([
+  {
+    $lookup: {
+      from: "students",
+      localField: "_id",
+      foreignField: "company_drive_id",
+      as: "students"
+    }
+  },
+  {
+    $project: {
+      company_drive_name: 1,
+      "students.name": 1,
+      "students.email": 1
+    }
+  }
+])
+
+4. Find the number of problems solved by the user in Codekata.
+
+db.codekata.aggregate([
+  {
+    $match: {
+      "user_id": "user_id_placeholder"
+    }
+  },
+  {
+    $group: {
+      _id: "$user_id",
+      problems_solved: { $sum: 1 }
+    }
+  }
+])
+
+5. Find all the mentors who have mentee counts more than 15.
+
+db.mentors.find({
+  "mentee_count": { $gt: 15 }
+})
+
+6. Find the number of users who are absent, and tasks are not submitted, between 15-Oct-2020 and 31-Oct-2020.
+
+db.users.aggregate([
+  {
+    $match: {
+      "absence_date": {
+        $gte: ISODate("2020-10-15T00:00:00.000Z"),
+        $lte: ISODate("2020-10-31T23:59:59.999Z")
+      },
+      "tasks_submitted": false
+    }
+  },
+  {
+    $count: "absent_and_not_submitted_users"
+  }
+])
+
+1.Find all the topics and tasks which are thought in the month of October
+2.Find all the company drives which appeared between 15 oct-2020 and 31-oct-2020
+3.Find all the company drives and students who are appeared for the placement.
+4.Find the number of problems solved by the user in codekata
+5.Find all the mentors with who has the mentee's count more than 15
+6.Find the number of users who are absent and task is not submitted  between 15 oct-2020 and 31-oct-2020
+
+
+1.Find all the topics and tasks which are thought in the month of October.
+Queries :-
+db.topics.insertMany([
+    { topic_id: 1, name: "HTML Basics", date: ISODate("2020-10-01") },
+    { topic_id: 2, name: "CSS Fundamentals", date: ISODate("2020-10-10") },
+    { topic_id: 3, name: "JavaScript Essentials", date: ISODate("2020-11-01") }
+]);
+db.tasks.insertMany([
+    { task_id: 1, task_name: "HTML Assignment", date: ISODate("2020-10-05") },
+    { task_id: 2, task_name: "CSS Project", date: ISODate("2020-10-15") },
+    { task_id: 3, task_name: "JavaScript Quiz", date: ISODate("2020-11-02") }
+]);
+
+db.topics.find({
+    date: { $gte: ISODate("2020-10-01"), $lt: ISODate("2020-11-01") }
+}).pretty();
+
+Query to Find Tasks in October
+
+Run this command to find all tasks performed in October 2020:
+
+db.tasks.find({
+    date: { $gte: ISODate("2020-10-01"), $lt: ISODate("2020-11-01") }
+}).pretty();
+
+[
+  { "_id": ObjectId("..."), "topic_id": 1, "name": "HTML Basics", "date": ISODate("2020-10-01T00:00:00Z") },
+  { "_id": ObjectId("..."), "topic_id": 2, "name": "CSS Fundamentals", "date": ISODate("2020-10-10T00:00:00Z") }
+]
+
+
+[
+  { "_id": ObjectId("..."), "task_id": 1, "task_name": "HTML Assignment", "date": ISODate("2020-10-05T00:00:00Z") },
+  { "_id": ObjectId("..."), "task_id": 2, "task_name": "CSS Project", "date": ISODate("2020-10-15T00:00:00Z") }
+]
+
+
+
+Use $gte (greater than or equal to) and $lt (less than) to filter dates for October.
+
+
+
+2.Find all the company drives which appeared between 15 oct-2020 and 31-oct-2020.
+Queries :-
+
+db.company_drives.insertMany([
+    { drive_id: 1, company_name: "Google", date: ISODate("2020-10-16") },
+    { drive_id: 2, company_name: "Microsoft", date: ISODate("2020-10-20") },
+    { drive_id: 3, company_name: "Amazon", date: ISODate("2020-11-05") },
+    { drive_id: 4, company_name: "Facebook", date: ISODate("2020-10-30") }
+]);
+
+db.company_drives.find({
+    date: { $gte: ISODate("2020-10-15"), $lte: ISODate("2020-10-31") }
+}).pretty();
+
+
+[
+  { "_id": ObjectId("..."), "drive_id": 1, "company_name": "Google", "date": ISODate("2020-10-16T00:00:00Z") },
+  { "_id": ObjectId("..."), "drive_id": 2, "company_name": "Microsoft", "date": ISODate("2020-10-20T00:00:00Z") },
+  { "_id": ObjectId("..."), "drive_id": 4, "company_name": "Facebook", "date": ISODate("2020-10-30T00:00:00Z") }
+]
+
+db.company_drives.find().pretty();
+
+
+db.company_drives.find({
+    date: { $gte: ISODate("2020-11-01"), $lte: ISODate("2020-11-30") }
+}).pretty();
+
+3.Find all the company drives and students who are appeared for the placement.
+Queries :-
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "_id": ObjectId("codekada_id"),
+  "user": ObjectId("user_id"),
+  "completed_topics": [
+    ObjectId("topic_id_1"),
+    ObjectId("topic_id_2")
+  ],
+  "tasks_submitted": [
+    ObjectId("task_id_1"),
+    ObjectId("task_id_2"),
+    ObjectId("task_id_3")
+  ],
+  "score": 85,
+  "rank": 3
+}
+
+I
+db.codekada.aggregate([
+  {
+    $match: { user: ObjectId("user_id") }  // Match the document where the user is the specific user_id
+  },
+  {
+    $project: {
+      solved_count: { $size: "$tasks_submitted" }  // Count the number of elements in 'tasks_submitted' array
+    }
+  }
+])
+
+Explanation of the Query
+
+
+{
+  "_id": ObjectId("codekada_id"),
+  "solved_count": 3
+}
+
+
+db.codekada.insertOne({
+  "user": ObjectId("user_id"),                // Reference to the user document
+  "completed_topics": [                       // Topics the user has completed
+    ObjectId("topic_id_1"),
+    ObjectId("topic_id_2")
+  ],
+  "tasks_submitted": [                        // Tasks the user has solved
+    ObjectId("task_id_1"),
+    ObjectId("task_id_2")
+  ],
+  "score": 90,                                // User's performance score
+  "rank": 1                                   // User's rank
+})
+
+
+
+
+
+db.codekada.aggregate([
+  {
+    $match: { user: ObjectId("user_id") }  // Match the document where the user is the specific user_id
+  },
+  {
+    $project: {
+      solved_count: { $size: "$tasks_submitted" }  // Count the number of elements in 'tasks_submitted' array
+    }
+  }
+])
+
+
+{
+  "mentorId": "mentor1",
+  "name": "John Doe",
+  "mentees": [
+    "student1",
+    "student2",
+    "student3",
+    ...
+  ]
+}
+
+
+
+db.mentors.find({
+  menteeCount: { $gt: 15 }  // Find mentors with mentee counts greater than 15
+});
+
+
+
+
+
+
+---
+
+Step 4: Output
+
+The query will return all mentor documents where the number of mentees exceeds 15.
+
+For example:
+
+[
+  {
+    "mentorId": "mentor2",
+    "name": "Jane Smith",
+    "mentees": ["student5", "student6", ..., "student21"]
+  }
+]
+
+Let me know if you need clarification or assistance with any other question!
+
+
+
+db.mentors.insertMany([
+  {
+    "mentorId": "mentor1",
+    "name": "John Doe",
+    "mentees": ["student1", "student2", "student3", "student4", "student5"]
+  },
+  {
+    "mentorId": "mentor2",
+    "name": "Jane Smith",
+    "mentees": [
+      "student6", "student7", "student8", "student9", "student10",
+      "student11", "student12", "student13", "student14", "student15",
+      "student16", "student17"
+    ]
+  },
+  {
+    "mentorId": "mentor3",
+    "name": "Emily Johnson",
+    "mentees": [
+      "student18", "student19", "student20", "student21", "student22",
+      "student23", "student24", "student25", "student26", "student27",
+      "student28", "student29", "student30", "student31", "student32",
+      "student33", "student34"
+    ]
+  }
+]);
+
+
+db.mentors.find().pretty();
+
+You should see the following output:
+
+[
+  {
+    "mentorId": "mentor1",
+    "name": "John Doe",
+    "mentees": ["student1", "student2", "student3", "student4", "student5"]
+  },
+  {
+    "mentorId": "mentor2",
+    "name": "Jane Smith",
+    "mentees": [
+      "student6", "student7", "student8", "student9", "student10",
+      "student11", "student12", "student13", "student14", "student15",
+      "student16", "student17"
+    ]
+  },
+  {
+    "mentorId": "mentor3",
+    "name": "Emily Johnson",
+    "mentees": [
+      "student18", "student19", "student20", "student21", "student22",
+      "student23", "student24", "student25", "student26", "student27",
+      "student28", "student29", "student30", "student31", "student32",
+      "student33", "student34"
+    ]
+  }
+]
+
+
+---
+
+Step 3: Run the Query
+
+Now that the mentors collection has data, run the query to find mentors with more than 15 mentees:
+
+db.mentors.find({
+  $expr: { $gt: [{ $size: "$mentees" }, 15] }
+});
+
+
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
